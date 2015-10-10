@@ -15,9 +15,9 @@ FILE* stats_file;
 FILE* stats_file_read;
 
 int main( void ){
-	stats_file_read = fopen( "./stats.x", "r" );
+	stats_file_read = fopen( "./data/stats.x", "r" );
 	if( !stats_file_read ){
-		stats_file = fopen( "./stats.x", "w" );
+		stats_file = fopen( "./data/stats.x", "w" );
 		struct fighter* main_character = create_character();
 		status_screen( main_character );
 		write_status( stats_file, main_character );
@@ -33,6 +33,7 @@ int main( void ){
 
 struct fighter* create_character(){
 	struct fighter* new_character = malloc( sizeof( struct fighter ) );
+	FILE* action_file = fopen( "./data/abilities.x", "r" );
 	new_character->exp = 0;
 	new_character->lvl = 5;
 	new_character->hp = 3 * new_character->lvl;
@@ -41,13 +42,18 @@ struct fighter* create_character(){
 	new_character->name = getstr();
 	new_character->str = new_character->lvl;
 	new_character->intel = new_character->lvl;
+	for( int i = 0; i < 4; i++ ){
+		new_character->attack[i] = get_action( action_file );
+	}
 	new_character->next = NULL;
+	fclose( action_file );
+	return new_character;
 }
 
 enemy* create_enemy(){
 	int cont;
 	enemy* new_enemy = malloc( sizeof( enemy ) );
-	FILE* name_file = fopen( "./names.x", "r" );
+	FILE* name_file = fopen( "./data/enemies.x", "r" );
 	int length = get_file_length( name_file ) - 1; //included in str.h
 	rewind( name_file );
 	srand( time( NULL ) );
@@ -63,6 +69,7 @@ enemy* create_enemy(){
 		else
 			free( new_enemy->name );
 	}
+	new_enemy->weakness = rand()%6;
 	return new_enemy;
 }
 
@@ -87,6 +94,6 @@ void random_battle( struct fighter* cabeza ){
 	int choice;
 	enemy* challenger1 = create_enemy();
 	while( challenger1->hp > 0 ){
-		choice = battle_menu();
+		battle_menu( cabeza );
 	}
 }

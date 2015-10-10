@@ -23,6 +23,11 @@ void write_status( FILE* stats_file, struct fighter* cabeza ){
 	fprintf( stats_file, "str: %d\n", cabeza->str );
 	fprintf( stats_file, "intel: %d\n", cabeza->intel );
 	fprintf( stats_file, "exp: %d\n", cabeza->exp );
+	for( int i = 0; i < 4; i++ ){
+		fprintf( stats_file, "%d,%s\n%d,%d\n", (cabeza->attack[i].type),
+				(cabeza->attack[i].name), (cabeza->attack[i].base_dmg),
+				(cabeza->attack[i].mana_need) );
+	}
 	if( cabeza->next )
 		write_status( stats_file, cabeza->next );
 	else
@@ -38,14 +43,37 @@ struct fighter* load_files( FILE* stats_file ){
 	fscanf( stats_file, "str: %d\n", &(cabeza->str) );
 	fscanf( stats_file, "intel: %d\n", &(cabeza->intel) );
 	fscanf( stats_file, "exp: %d\n", &(cabeza->exp) );
+	for( int i = 0; i < 4; i++ ){
+		fscanf( stats_file, "%d,%s\n%d,%d", &(cabeza->attack[i].type),
+				(cabeza->attack[i].name), &(cabeza->attack[i].base_dmg),
+				&(cabeza->attack[i].mana_need) );
+	}
 	return cabeza;
 }
 
-int battle_menu(){
+action get_action( FILE* action_file ){
+	action new_action;
+	fscanf( action_file, "%d,%s\n%d,%d", &(new_action.type),
+			(new_action.name), &(new_action.base_dmg),
+			&(new_action.mana_need) );
+	return new_action;
+}
+
+void print_action( struct fighter* cabeza ){
+	printf( "\tAttack----------MP\n");
+	for( int i = 0; i < 4; i++ )
+		printf( "\t%d-%10s |  %d\n", i, cabeza->attack[i].name, cabeza->attack[i].mana_need );
+}
+
+int battle_menu( struct fighter* cabeza ){
 	int choice = 0;
 	while( choice == 0 ){
-		printf( "What will you do?\n1-Attack\n2-Flee\n" );
+		printf( "What will you do?\n%2s1-Attack\n%2s2-Flee\n","","" );
+		printf( ":" );
 		scanf( "%d", &choice );
+		if( choice == 1 ){
+			print_action( cabeza );
+		}
 	}
 	return choice;
 }
