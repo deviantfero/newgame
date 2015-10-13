@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <time.h>
 #include "./structures.h" //contains structures
 #include "./str.h" //contains file reading and string managing
@@ -59,8 +60,8 @@ enemy* create_enemy(){
 	srand( time( NULL ) );
 	int line = rand()%length + 1;
 	//printf( "%d", line ); //file Diagnosis line -- do not remove
-	new_enemy->lvl = rand()%10 + 1;
-	new_enemy->hp = rand()%( new_enemy->lvl * 2 ) + 1;
+	new_enemy->lvl = rand()%10 + 1; //will be adaptable to hero's lvl
+	new_enemy->hp = rand()%( new_enemy->lvl * 10 ) + 1;
 	new_enemy->mana = rand()%( new_enemy->lvl * 3 ) + 1;
 	for( cont = 1; cont <= line; cont++ ){
 		new_enemy->name = fget_line( name_file );
@@ -94,6 +95,27 @@ void random_battle( struct fighter* cabeza ){
 	int choice;
 	enemy* challenger1 = create_enemy();
 	while( challenger1->hp > 0 ){
-		battle_menu( cabeza );
+		sleep( 1 );
+		system( "clear" ); //for POSIX
+		printf( "\tEnemy:  %s%5sHP: %d\n", challenger1->name, "", challenger1->hp );
+		choice = battle_menu( cabeza );
+		switch( choice ){
+			case 1:
+				print_action( cabeza );
+				printf(":");
+				scanf( "%d", &choice );
+				damage_step( choice, &challenger1, &cabeza );
+				break;
+			case 9:
+				printf( "\tYou ran like a pussy\n" );
+				exit(0);
+			case 2:
+				status_screen( cabeza );
+				getchar();
+				break;
+			default:
+				printf( "\tWrong option! enter a new one\n" );
+		}
+		
 	}
 }

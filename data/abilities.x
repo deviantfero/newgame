@@ -1,8 +1,8 @@
 5,attack
-5,1
+2,0
 1,fireball
-7,5
+7,4
 2,icecube
-7,5
+7,4
 3,wave
-5,5
+5,3
