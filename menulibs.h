@@ -95,5 +95,12 @@ int damage_step( int choice, enemy** challenger, struct fighter** cabeza ){
 		(*cabeza)->mana -= (*cabeza)->attack[choice - 1].mana_need;
 	(*challenger)->hp -= dmg;
 	printf( "\t%d - damage!\n", dmg );
+	if( (*challenger)->hp > 0 ){
+		//starts enemy dmg step
+		printf( "%s - Attacks!\n", (*challenger)->name );
+		dmg = rand()%(*challenger)->lvl; //random dmg based on enemy lvl
+		(*cabeza)->hp -= dmg;
+		printf( "\t%d - damage!\n", dmg );
+	}//else it doesn't attack, it's ded!
 	return 0;
 }

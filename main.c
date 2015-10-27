@@ -94,7 +94,7 @@ void join_party( struct fighter** cabeza ){
 void random_battle( struct fighter* cabeza ){
 	int choice;
 	enemy* challenger1 = create_enemy();
-	while( challenger1->hp > 0 ){
+	while( cabeza->hp && challenger1->hp > 0 ){
 		sleep( 1 );
 		system( "clear" ); //for POSIX
 		printf( "\tEnemy:  %s%5sHP: %d\n", challenger1->name, "", challenger1->hp );
@@ -118,4 +118,5 @@ void random_battle( struct fighter* cabeza ){
 		}
 		
 	}
+	printf( "You won!\n" );
 }
