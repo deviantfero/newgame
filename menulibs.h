@@ -24,7 +24,7 @@ void write_status( FILE* stats_file, struct fighter* cabeza ){
 	fprintf( stats_file, "str: %d\n", cabeza->str );
 	fprintf( stats_file, "intel: %d\n", cabeza->intel );
 	fprintf( stats_file, "exp: %d\n", cabeza->exp );
-	for( int i = 0; i < 4; i++ ){
+	for( int i = 0; i < ACTION_MAX; i++ ){
 		fprintf( stats_file, "%d,%s\n%d,%d\n", (cabeza->attack[i].type),
 				(cabeza->attack[i].name), (cabeza->attack[i].base_dmg),
 				(cabeza->attack[i].mana_need) );
@@ -44,7 +44,7 @@ struct fighter* load_files( FILE* stats_file ){
 	fscanf( stats_file, "str: %d\n", &(cabeza->str) );
 	fscanf( stats_file, "intel: %d\n", &(cabeza->intel) );
 	fscanf( stats_file, "exp: %d\n", &(cabeza->exp) );
-	for( int i = 0; i < 4; i++ ){
+	for( int i = 0; i < ACTION_MAX; i++ ){
 		fscanf( stats_file, "%d,%s\n%d,%d", &(cabeza->attack[i].type),
 				(cabeza->attack[i].name), &(cabeza->attack[i].base_dmg),
 				&(cabeza->attack[i].mana_need) );
@@ -62,7 +62,7 @@ action get_action( FILE* action_file ){
 
 void print_action( struct fighter* cabeza ){
 	printf( "\tAttack----------MP\n");
-	for( int i = 0; i < 4; i++ )
+	for( int i = 0; i < ACTION_MAX; i++ )
 		printf( "\t%d-%10s |  %d\n", i + 1, cabeza->attack[i].name, cabeza->attack[i].mana_need );
 }
 
@@ -78,22 +78,55 @@ int battle_menu( struct fighter* cabeza ){
 	return choice;
 }
 
+int target_choice( struct fighter** cabeza, enemy** challenger ){
+	static int i = 0;
+	static struct fighter* prev_cab = NULL;
+	int target;
+	printf("\n");
+	if( *cabeza != prev_cab ){
+		printf( "\t%d.%-5s\n", i + 1, (*cabeza)->name );
+		(*cabeza)->target = i + 1;
+		i++;
+	}
+	if( (*cabeza)->next ){
+		prev_cab = *cabeza;
+		target_choice( &(*cabeza)->next, challenger );
+	}
+	else{
+		printf( "\t%d.%-5s\n", i + 1, (*challenger)->name );
+		(*challenger)->target = i + 1;
+	}
+	printf( "Who are you going to attack?: " );
+	scanf( "%d", &target );
+	i = 0;
+	return target;
+}
+
 int damage_step( int choice, enemy** challenger, struct fighter** cabeza ){
 	srand( time( NULL ) );
-	int dmg;
+	int dmg, target;
 	int random = rand()%(*cabeza)->lvl; //random factor based on level
 	dmg = ( (*cabeza)->attack[choice - 1].base_dmg * random ) + 1; 
-	if( (*cabeza)->attack[choice - 1].type == (*challenger)->weakness ){
-		dmg *= 2;
-		printf( "\tDAMN SON! you on fire!\n" );
-	}
 	if( (*cabeza)->mana < (*cabeza)->attack[choice - 1].mana_need ){
 		printf( "\tNot enough mana!\n" );
 		return 1;
 	}
-	if( (*cabeza)->mana >  (*cabeza)->attack[choice - 1].mana_need )
-		(*cabeza)->mana -= (*cabeza)->attack[choice - 1].mana_need;
-	(*challenger)->hp -= dmg;
+	target = target_choice( cabeza, challenger );
+	if( target == (*challenger)->target ){
+		if( (*cabeza)->attack[choice - 1].type == (*challenger)->weakness ){
+			dmg *= 2;
+			printf( "\tDAMN SON! you on fire!\n" );
+		}
+		if( (*cabeza)->mana >  (*cabeza)->attack[choice - 1].mana_need )
+			(*cabeza)->mana -= (*cabeza)->attack[choice - 1].mana_need;
+		(*challenger)->hp -= dmg;
+	}else if( !(*cabeza)->next && (*cabeza)->target == target ){
+		if( (*cabeza)->mana >  (*cabeza)->attack[choice - 1].mana_need )
+			(*cabeza)->mana -= (*cabeza)->attack[choice - 1].mana_need;
+		(*cabeza)->hp -= dmg;
+	}else{
+		printf( "Still not implemented" );
+	}
 	printf( "\t%d - damage!\n", dmg );
 	if( (*challenger)->hp > 0 ){
 		//starts enemy dmg step

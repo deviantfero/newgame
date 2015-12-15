@@ -1,5 +1,6 @@
 
 /* -------- Structures definitions --------- */
+#define ACTION_MAX 5
 
 typedef enum{ NONE, FIRE, ICE, WATER, WIND, PHYSICAL }attribute;
 
@@ -19,13 +20,15 @@ struct fighter{
 	int intel;
 	struct fighter* next;
 	int exp;
-	action attack[4];
+	int target;
+	action attack[ACTION_MAX];
 };
 
 typedef struct{
 	int hp;
 	int lvl;
 	int mana;
+	int target;
 	char* name;
 	attribute weakness;
 }enemy; //new data type for enemies

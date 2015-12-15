@@ -1,0 +1,5 @@
+-Edit the function which controls the target of the attack. --target_choice()-- ( DONE )
+-Implement this to have the Heal abillity working on the player. --damage_step()-- ( DONE )
+-It has to print targets recursively. --target_choice()-- ( DONE )
+
+-Implement animations --damage_step()--

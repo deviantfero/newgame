@@ -43,7 +43,7 @@ struct fighter* create_character(){
 	new_character->name = getstr();
 	new_character->str = new_character->lvl;
 	new_character->intel = new_character->lvl;
-	for( int i = 0; i < 4; i++ ){
+	for( int i = 0; i < ACTION_MAX; i++ ){
 		new_character->attack[i] = get_action( action_file );
 	}
 	new_character->next = NULL;
@@ -94,7 +94,7 @@ void join_party( struct fighter** cabeza ){
 void random_battle( struct fighter* cabeza ){
 	int choice;
 	enemy* challenger1 = create_enemy();
-	while( cabeza->hp && challenger1->hp > 0 ){
+	while( cabeza->hp > 0 && challenger1->hp > 0 ){
 		sleep( 1 );
 		system( "clear" ); //for POSIX
 		printf( "\tEnemy:  %s%5sHP: %d\n", challenger1->name, "", challenger1->hp );
@@ -118,5 +118,8 @@ void random_battle( struct fighter* cabeza ){
 		}
 		
 	}
-	printf( "You won!\n" );
+	if( cabeza->hp < 0 )
+		printf( "You lost!\n" );
+	else
+		printf( "You won!\n" );
 }
