@@ -116,7 +116,6 @@ void random_battle( struct fighter* cabeza ){
 			default:
 				printf( "\tWrong option! enter a new one\n" );
 		}
-		
 	}
 	if( cabeza->hp < 0 )
 		printf( "You lost!\n" );
