@@ -6,11 +6,11 @@
 void status_screen( struct fighter* cabeza ){
 	printf( "----%s-----\n", cabeza->name );
 	printf( "Lvl:   %d\n", cabeza->lvl );
-	printf( "HP:    %d\n", cabeza->hp );
-	printf( "Mana:  %d\n", cabeza->mana );
+	printf( "HP:    %d/%d\n", cabeza->hp, cabeza->max_hp );
+	printf( "Mana:  %d/%d\n", cabeza->mana, cabeza->max_mana );
 	printf( "str:   %d\n", cabeza->str );
 	printf( "intel: %d\n", cabeza->intel );
-	printf( "exp:   %d\n", cabeza->exp );
+	printf( "exp:   %d/%d\n", cabeza->exp, cabeza->max_exp );
 	printf( "----------------\n" );
 	if( cabeza->next )
 		status_screen( cabeza->next );
@@ -19,11 +19,12 @@ void status_screen( struct fighter* cabeza ){
 void write_status( FILE* stats_file, struct fighter* cabeza ){
 	fprintf( stats_file, "%s\n", cabeza->name );
 	fprintf( stats_file, "Lvl: %d\n", cabeza->lvl );
-	fprintf( stats_file, "HP: %d\n", cabeza->hp );
-	fprintf( stats_file, "Mana: %d\n", cabeza->mana );
+	fprintf( stats_file, "HP: %d\n", cabeza->max_hp );
+	fprintf( stats_file, "Mana: %d\n", cabeza->max_mana );
 	fprintf( stats_file, "str: %d\n", cabeza->str );
 	fprintf( stats_file, "intel: %d\n", cabeza->intel );
 	fprintf( stats_file, "exp: %d\n", cabeza->exp );
+	fprintf( stats_file, "max_exp: %d\n", cabeza->max_exp );
 	for( int i = 0; i < ACTION_MAX; i++ ){
 		fprintf( stats_file, "%d,%s\n%d,%d\n", (cabeza->attack[i].type),
 				(cabeza->attack[i].name), (cabeza->attack[i].base_dmg),
@@ -39,16 +40,19 @@ struct fighter* load_files( FILE* stats_file ){
 	struct fighter* cabeza = malloc( sizeof( struct fighter ) );
 	cabeza->name = fget_line( stats_file );
 	fscanf( stats_file, "Lvl: %d\n", &(cabeza->lvl) );
-	fscanf( stats_file, "HP: %d\n", &(cabeza->hp) );
-	fscanf( stats_file, "Mana: %d\n", &(cabeza->mana) );
+	fscanf( stats_file, "HP: %d\n", &(cabeza->max_hp) );
+	fscanf( stats_file, "Mana: %d\n", &(cabeza->max_mana) );
 	fscanf( stats_file, "str: %d\n", &(cabeza->str) );
 	fscanf( stats_file, "intel: %d\n", &(cabeza->intel) );
 	fscanf( stats_file, "exp: %d\n", &(cabeza->exp) );
+	fscanf( stats_file, "max_exp: %d\n", &(cabeza->max_exp) );
 	for( int i = 0; i < ACTION_MAX; i++ ){
 		fscanf( stats_file, "%d,%s\n%d,%d", &(cabeza->attack[i].type),
 				(cabeza->attack[i].name), &(cabeza->attack[i].base_dmg),
 				&(cabeza->attack[i].mana_need) );
 	}
+	cabeza->hp = cabeza->max_hp;
+	cabeza->mana = cabeza->max_mana;
 	return cabeza;
 }
 
@@ -105,8 +109,10 @@ int target_choice( struct fighter** cabeza, enemy** challenger ){
 int damage_step( int choice, enemy** challenger, struct fighter** cabeza ){
 	srand( time( NULL ) );
 	int dmg, target;
-	int random = rand()%(*cabeza)->lvl; //random factor based on level
-	dmg = ( (*cabeza)->attack[choice - 1].base_dmg * random ) + 1; 
+	int random = rand()%(*cabeza)->attack[choice - 1].base_dmg; //random factor based on level
+	dmg = ( (*cabeza)->str * random/2 ) + 2; 
+	if( choice == 5 )
+		dmg = -dmg;
 	if( (*cabeza)->mana < (*cabeza)->attack[choice - 1].mana_need ){
 		printf( "\tNot enough mana!\n" );
 		return 1;
@@ -131,9 +137,23 @@ int damage_step( int choice, enemy** challenger, struct fighter** cabeza ){
 	if( (*challenger)->hp > 0 ){
 		//starts enemy dmg step
 		printf( "%s - Attacks!\n", (*challenger)->name );
-		dmg = rand()%(*challenger)->lvl; //random dmg based on enemy lvl
-		(*cabeza)->hp -= dmg;
+		dmg = rand()%(*cabeza)->lvl; //random dmg based on enemy lvl
+		(*cabeza)->hp -= dmg * 2;
 		printf( "\t%d - damage!\n", dmg );
 	}//else it doesn't attack, it's ded!
 	return 0;
+}
+
+void level_up( struct fighter* cabeza ) {
+	if( cabeza->exp >= cabeza->max_exp ) {
+		cabeza->exp = cabeza->exp - cabeza->max_exp; 
+		cabeza->lvl += 1;
+		cabeza->max_exp += cabeza->lvl * ( rand()%5 + 1 );
+		cabeza->str += 2;
+		cabeza->max_hp += 2;
+		cabeza->max_mana += 2;
+		cabeza->intel += 2;
+	}
+	if( cabeza->next )
+		level_up( cabeza->next );
 }

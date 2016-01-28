@@ -13,13 +13,16 @@ typedef struct{
 
 struct fighter{
 	int hp;
+	int max_hp;
 	int lvl;
 	int mana;
+	int max_mana;
 	char* name;
 	int str;
 	int intel;
 	struct fighter* next;
 	int exp;
+	int max_exp;
 	int target;
 	action attack[ACTION_MAX];
 };
