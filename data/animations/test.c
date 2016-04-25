@@ -1,7 +1,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../str.h"
+#include "./str.h"
 
 int main( int argc, char** argv ){
 	char* frame;
@@ -11,8 +11,8 @@ int main( int argc, char** argv ){
 	system( "clear" );
 	while( !feof( animation ) ){
 		frame = fget_line( animation );
-		printf( "%s\n", frame );
-		usleep( 100000 );
-		system( "clear" );
+		usleep(100000);
+		printf( "%s           \r", frame );
+		fflush( stdout );
 	}
 }
