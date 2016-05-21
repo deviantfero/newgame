@@ -46,12 +46,12 @@ class Character {
 
 Character::Character( std::string name ) {
 	this->name = name;
-	this->job = "None";
+	//this->job = "None";
 	/*this is to be moved to the sub classes
 	that inherit from this superclass */
 	this->hp = 40;
 	this->lvl = 5;
-	this->exp = 100;
+	//this->exp = 100;
 	this->mana = 10;
 	this->str = 10;
 	this->res = 10;
@@ -61,12 +61,12 @@ Character::Character( std::string name ) {
 
 Character::Character() {
 	this->name = "None";
-	this->job = "None";
+	//this->job = "None";
 	/*this is to be moved to the sub classes
 	that inherit from this superclass */
 	this->hp = 40;
 	this->lvl = 5;
-	this->exp = 100;
+	//this->exp = 100;
 	this->mana = 10;
 	this->str = 10;
 	this->res = 10;
