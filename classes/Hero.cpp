@@ -1,9 +1,7 @@
-class Hero {
+class Character {
 	private:
 		std::string name;
-		std::string job;
 		int lvl;
-		int exp;
 		int hp;
 		int mana; //magic points
 		int str; //strength for physical attacks
@@ -11,20 +9,12 @@ class Hero {
 		int res; //resistance
 		int speed; //defines who goes first in attack step
 	public:
-		Hero( std::string name );
-		Hero();
+		Character( std::string name );
+		Character();
 		/*the actual hp and other atributes go here
 		as those will be the ones that are modified
 		by battles, while the otherones will be modified
 		by level, as they are the "stats" of the character*/
-		int ahp;
-		int amana;
-		int aexp;
-		int astr;
-		int awis;
-		int ares;
-		int aspeed;
-
 		//setters and getter for strings
 		void setName( std::string name );
 		std::string getName();
@@ -54,9 +44,11 @@ class Hero {
 		void printStatus();
 };
 
-Hero::Hero( std::string name ) {
+Character::Character( std::string name ) {
 	this->name = name;
 	this->job = "None";
+	/*this is to be moved to the sub classes
+	that inherit from this superclass */
 	this->hp = 40;
 	this->lvl = 5;
 	this->exp = 100;
@@ -65,19 +57,13 @@ Hero::Hero( std::string name ) {
 	this->res = 10;
 	this->wis = 10;
 	this->speed = 10;
-
-	this->ahp = this->hp;
-	this->amana = this->mana;
-	this->aexp = 0;
-	this->astr = this->str;
-	this->ares = this->res;
-	this->aspeed = this->speed;
-	this->awis = this->wis;
 }
 
-Hero::Hero() {
+Character::Character() {
 	this->name = "None";
 	this->job = "None";
+	/*this is to be moved to the sub classes
+	that inherit from this superclass */
 	this->hp = 40;
 	this->lvl = 5;
 	this->exp = 100;
@@ -86,11 +72,4 @@ Hero::Hero() {
 	this->res = 10;
 	this->wis = 10;
 	this->speed = 10;
-	this->ahp = this->hp;
-	this->amana = this->mana;
-	this->aexp = 0;
-	this->astr = this->str;
-	this->ares = this->res;
-	this->aspeed = this->speed;
-	this->awis = this->wis;
 }
